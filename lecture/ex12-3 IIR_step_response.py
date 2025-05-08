@@ -2,8 +2,9 @@ import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
 
-n = np.linspace(0, 10, 10, endpoint = False)
-x = np.ones(10)
+FRAME_WIDTH = 50
+n = np.linspace(0, FRAME_WIDTH, FRAME_WIDTH, endpoint = False)
+x = np.ones(len(n))
 x[0] = 0
 
 b = np.array([1])

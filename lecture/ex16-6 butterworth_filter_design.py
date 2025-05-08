@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
+from scipy.signal import group_delay
 
 print("Butterworth Filter Design")
 print("(1)Lowpass Filter")
@@ -8,10 +9,15 @@ print("(2)Highpass Filter")
 print("(3)Bandpass Filter")
 print("(4)Bandstop Filter")
 
+filter_name = {
+    1: 'lowpass',
+    2: 'highpass',
+    3: 'bandpass',
+    4: 'bandstop'
+}
+
 use_filter = eval(input("Plesase enter your choice: "))
 print("-------------------------------------------")
-
-filter_name = ['lowpass', 'highpass', 'bandpass', 'bandstop']
 
 if use_filter == 1 or use_filter == 2:
     fp = eval(input("Enter passband edge frequency(Hz): "))
@@ -33,7 +39,7 @@ if use_filter == 1 or use_filter == 2:
     print('linear_rs = ', linear_rs, '(magnification), ', 'rs = ', rs, '(dB)')
     
     n, wn = signal.buttord(wp, ws, rp, abs(rs))
-    b, a = signal.butter(n, wn, filter_name[use_filter - 1])
+    b, a = signal.butter(n, wn, filter_name[use_filter])
 elif use_filter == 3 or use_filter == 4:
     fp1 = eval(input("Enter 1st passband edge frequency(Hz): "))
     fp2 = eval(input("Enter 2st passband edge frequency(Hz): "))
@@ -60,7 +66,7 @@ elif use_filter == 3 or use_filter == 4:
     print('linear_rs = ', linear_rs, '(magnification), ', 'rs = ', rs, '(dB)')
     
     n, wn = signal.buttord([wp1, wp2], [ws1, ws2], rp, abs(rs))
-    b, a = signal.butter(n, wn, filter_name[use_filter - 1])
+    b, a = signal.butter(n, wn, filter_name[use_filter])
 else:
     print("Your choice is bot supproted!")
     quit()
@@ -77,15 +83,15 @@ freqs = w / np.pi * (Fs / 2)  # 轉換為 Hz
 
 fig, ax = plt.subplots(3, 1, sharex=True)
 
-ax[0].plot(freqs, magnitude)
-ax[0].set_ylabel('Magnitude (dB)')
-ax[0].set_title(f'{filter_name[use_filter - 1].capitalize()} Butterworth Filter Response')
-ax[0].grid()
-
-ax[1].plot(freqs, abs(H))
-ax[1].set_ylabel('Magnitude')
-ax[1].set_title(f'{filter_name[use_filter - 1].capitalize()} Butterworth Filter Response')
+ax[1].plot(freqs, magnitude)
+ax[1].set_ylabel('Magnitude (dB)')
+# ax[1].set_title(f'{filter_name[use_filter].capitalize()} Butterworth Filter Response')
 ax[1].grid()
+
+ax[0].plot(freqs, abs(H))
+ax[0].set_ylabel('Magnitude')
+ax[0].set_title(f'{filter_name[use_filter].capitalize()} Butterworth Filter Response')
+ax[0].grid()
 
 ax[2].plot(freqs, phase)
 ax[2].set_xlabel('Frequency (Hz)')
@@ -106,18 +112,45 @@ fig, ax1 = plt.subplots(figsize=(10, 5))
 ax1.plot(t, impulse, label="Input", color='red')
 ax1.set_xlabel("Time(s)")
 ax1.set_ylabel("Input")
-ax1.tick_params(axis='y', labelcolor='red')
+# ax1.tick_params(axis='y', labelcolor='red')
 
-ax2 = ax1.twinx()
-ax2.plot(t, impulse_response, label="Output", color='blue')
-ax2.set_ylabel("Output", color='blue')
-ax2.tick_params(axis='y', labelcolor='blue')
+# ax2 = ax1.twinx()
+# ax2.plot(t, impulse_response, label="Output", color='blue')
+# ax2.set_ylabel("Output", color='blue')
+# ax2.tick_params(axis='y', labelcolor='blue')
 
-ax1.set_title(f'{filter_name[use_filter].capitalize()} Impulse response(Input v.s. Output)')
-lines_1, labels_1 = ax1.get_legend_handles_labels()
-lines_2, labels_2 = ax2.get_legend_handles_labels()
+ax1.plot(t, impulse_response, label="Output", color='blue')
+ax1.set_ylabel("Output", color='blue')
+# ax1.tick_params(axis='y', labelcolor='blue')
+
+ax1.grid()
+ax1.set_title(f'{filter_name[use_filter].capitalize()} Impulse response')
+# lines_1, labels_1 = ax1.get_legend_handles_labels()
+# lines_2, labels_2 = ax1.get_legend_handles_labels()
 # fig.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper right')
-plt.legend(lines_1 + lines_2, labels_1 + labels_2)
+# plt.legend(lines_1 + lines_2, labels_1 + labels_2)
+plt.legend()
 fig.tight_layout()
+
+# 計算 group delay，並轉換成 Hz（因為 fs 有提供）
+w_gd, gd = signal.group_delay((b, a), fs=Fs)
+gd_ms = gd * 1000 / Fs  # 全部轉換為毫秒
+# max_idx = np.argmax(gd)
+# max_freq = w_gd[max_idx]
+# max_delay = gd[max_idx]
+# max_delay_ms = max_delay / Fs * 1000
+
+# 畫出 Group Delay 圖
+plt.figure(figsize=(10, 5))
+plt.plot(w_gd, gd_ms, color='purple', label="Group Delay (ms)")
+# plt.scatter([max_freq], [max_delay_ms], color='red', zorder=5,
+#             label=f"Max Delay = {max_delay_ms:.2f} ms\n@ {max_freq:.1f} Hz")
+# plt.axhline(0, color='gray', linestyle='--')
+# plt.title("Highpass Group Delay")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Delay (ms)")
+plt.grid(True)
+# plt.legend()
+plt.tight_layout()
 
 plt.show()

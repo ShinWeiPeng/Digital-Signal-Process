@@ -29,26 +29,33 @@ half = slice(0, N//2)
 # 畫圖（幅度與相位）
 plt.figure(figsize=(12, 5))
 
-plt.subplot(3, 1, 1)
+plt.subplot(4, 1, 1)
+plt.plot(freq, 20 * np.log10(np.abs(H)))
+plt.ylabel('Magnitude (dB)')
+plt.xlabel("Frequency (Hz)")
+plt.title("fft element-wise division")
+plt.grid()
+
+plt.subplot(4, 1, 2)
 plt.plot(freq[half], 20 * np.log10(np.abs(H[half])))
 plt.ylabel('Magnitude (dB)')
 plt.xlabel("Frequency (Hz)")
-plt.title("element-wise division")
+plt.title("fft element-wise division")
 plt.grid()
 
-plt.subplot(3, 1, 3)
-plt.plot(freq[half], np.angle(H[half]) * 2 * np.pi)
-plt.ylabel('Phase (degree)')
-plt.xlabel("Frequency (Hz)")
-plt.grid()
-
-plt.subplot(3, 1, 2)
+plt.subplot(4, 1, 3)
 w, h = freqz(b, a, worN=N)
 freqs = w / np.pi * (fs / 2)  # 轉換為 Hz
 plt.plot(freqs, 20 * np.log10(abs(h)))
 plt.ylabel("Magnitude (dB)")
 plt.xlabel("Frequency (Hz)")
 plt.title("freqz")
+plt.grid()
+
+plt.subplot(4, 1, 4)
+plt.plot(freq[half], np.angle(H[half]) * 2 * np.pi)
+plt.ylabel('Phase (degree)')
+plt.xlabel("Frequency (Hz)")
 plt.grid()
 
 plt.tight_layout()
