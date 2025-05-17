@@ -26,8 +26,11 @@ if use_filter == 1 or use_filter == 2:
     linear_rs = eval(input("Enter stopband gain(linear): "))
     Fs = eval(input("Enter sampleing frequency(Hz): "))
     
-    wp = 2 * fp / Fs
+    wp = 2 * fp / Fs    # (radians/sample), w = 2 * pi * f / Fs, w_normalized = w / pi = 2 * f / Fs
     ws = 2 * fs / Fs
+        
+    wp_range = [wp]
+    ws_range = [ws]
     
     print('fp = ', fp, '(Hz), ', 'wp = ', wp, '(rad)')
     print('fs = ', fs, '(Hz), ', 'ws = ', ws, '(rad)')
@@ -37,9 +40,7 @@ if use_filter == 1 or use_filter == 2:
     
     print('linear_rp = ', linear_rp, '(magnification), ', 'rp = ', rp, '(dB)')
     print('linear_rs = ', linear_rs, '(magnification), ', 'rs = ', rs, '(dB)')
-    
-    n, wn = signal.buttord(wp, ws, rp, abs(rs))
-    b, a = signal.butter(n, wn, filter_name[use_filter])
+
 elif use_filter == 3 or use_filter == 4:
     fp1 = eval(input("Enter 1st passband edge frequency(Hz): "))
     fp2 = eval(input("Enter 2st passband edge frequency(Hz): "))
@@ -54,6 +55,9 @@ elif use_filter == 3 or use_filter == 4:
     ws1 = 2 * fs1 / Fs
     ws2 = 2 * fs2 / Fs
     
+    wp_range = [wp1, wp2]
+    ws_range = [ws1, ws2]
+    
     print('fp1 = ', fp1, '(Hz), ', 'wp1 = ', wp1, '(rad)')
     print('fs1 = ', fs1, '(Hz), ', 'ws1 = ', ws1, '(rad)')
     print('fp2 = ', fp2, '(Hz), ', 'wp2 = ', wp2, '(rad)')
@@ -64,12 +68,13 @@ elif use_filter == 3 or use_filter == 4:
     
     print('linear_rp = ', linear_rp, '(magnification), ', 'rp = ', rp, '(dB)')
     print('linear_rs = ', linear_rs, '(magnification), ', 'rs = ', rs, '(dB)')
-    
-    n, wn = signal.buttord([wp1, wp2], [ws1, ws2], rp, abs(rs))
-    b, a = signal.butter(n, wn, filter_name[use_filter])
 else:
     print("Your choice is bot supproted!")
     quit()
+    
+    
+n, wn = signal.buttord(wp_range, ws_range, rp, abs(rs))
+b, a = signal.butter(n, wn, filter_name[use_filter])
     
 print('IIR Filter Order = ', n)
 print('IIR Filter Order = ', len(a) - 1)
