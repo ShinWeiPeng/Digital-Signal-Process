@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 from scipy.signal import group_delay
 from dialog import InputNumber
 
+count = 0
 def run_analysis():
+    global count
+    count += 1
     print("(1)Butterworth Filter")
     print("(2)Elliptic Filter")
     print("(3)Chebyshev Type I Filter")
@@ -20,6 +23,7 @@ def run_analysis():
     }
     
     if used_filter_method == None or used_filter_method > len(filter_design_method):
+        print("Your choice is bot supproted!")
         return None
     
     print("-------------------------------------------")
@@ -45,6 +49,7 @@ def run_analysis():
     
     used_filter = InputNumber("Plesase enter your choice: ")
     if used_filter == None or used_filter > len(filter_name):
+        print("Your choice is bot supproted!")
         return None
     
     print("-------------------------------------------")
@@ -149,7 +154,10 @@ def run_analysis():
         case _:
             raise NotImplementedError(f"'{used_filter_method}' not supported.")
 
-    print('IIR Filter Order = ', n)
+    print(f'Number {count} IIR Filter {filter_design_method[used_filter_method]} {n} Order')
+    print(f'Number {count} IIR Filter b Coefficients = {b}')
+    print(f'Number {count} IIR Filter a Coefficients = {a}')
+    
     print("-------------------------------------------")
 
     fig, ax = plt.subplots(3, 1, figsize=(8, 6))
@@ -162,7 +170,7 @@ def run_analysis():
 
     ax[0].plot(freqs, magnitude)
     ax[0].set_ylabel('Magnitude')
-    ax[0].set_title(f'{filter_design_method[used_filter_method]} {filter_name[used_filter].capitalize()} {n} Order Filter')
+    ax[0].set_title(f'{count} {filter_design_method[used_filter_method]} {filter_name[used_filter].capitalize()} {n} Order Filter')
     ax[0].grid()
     
     FRAME_WIDE = 200
@@ -178,7 +186,7 @@ def run_analysis():
 
     ax[1].plot(t, impulse_response, label="Output", color='blue')
     ax[1].grid()
-    ax[1].set_title(f'{filter_design_method[used_filter_method]} {filter_name[used_filter].capitalize()} Impulse response')
+    ax[1].set_title(f'{count} {filter_design_method[used_filter_method]} {filter_name[used_filter].capitalize()} Impulse response')
 
     ax[1].legend()
     
@@ -187,7 +195,7 @@ def run_analysis():
     gd_ms = gd * 1000 / Fs  # 全部轉換為毫秒
     # 畫出 Group Delay 圖
     ax[2].plot(w_gd, gd_ms, color='purple', label="Group Delay (ms)")
-    ax[2].set_title(f'{filter_design_method[used_filter_method]} {filter_name[used_filter].capitalize()} Group Delay')
+    ax[2].set_title(f'{count} {filter_design_method[used_filter_method]} {filter_name[used_filter].capitalize()} Group Delay')
     ax[2].set_xlabel("Frequency (Hz)")
     ax[2].set_ylabel("Delay (ms)")
     ax[2].grid(True)
@@ -195,7 +203,7 @@ def run_analysis():
     fig.tight_layout()
     
     return True
-    
+
 print("IIR Filter Design")
 while run_analysis() != None:
     continue
